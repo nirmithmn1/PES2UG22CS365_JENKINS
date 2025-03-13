@@ -2,63 +2,37 @@ pipeline {
     agent any
 
     stages {
+        stage('Clone repository') {
+            steps {
+                checkout([$class: 'GitSCM', 
+                    branches: [[name: '*/main']], 
+                    userRemoteConfigs: [[url: 'https://github.com/nirmithmn1/PES2UG22CS365_JENKINS.git']]
+                ])
+            }
+        }
+
         stage('Build') {
             steps {
-                script {
-                    sh 'g++ hello.cpp -o hello'
-                }
+                sh 'g++ main/hello.cpp -o main/output'
             }
         }
-        
-        stage('Test') {
-            steps {pipeline {
-    agent any
-    
-    stages {
-        stage('Build') {
-            steps {
-                sh 'g++-wrong -o PES2UG22CS365-1 PES2UG22CS365-1.cpp'
-                echo 'Build Stage Successful'
-            }
-        }
-        
+
         stage('Test') {
             steps {
-                sh './PES2UG22CS365-1'
-                echo 'Test Stage Successful'
-            }
-        }
-        
-        stage('Deploy') {
-            steps {
-                sh 'echo Deploying the application'
-                echo 'Deployment Successful'
-            }
-        }
-    }
-    
-    post {
-        failure {
-            echo 'Pipeline failed'
-        }
-    }
-}
-                script {
-                    sh './hello'
-                }
+                sh './main/output'
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying Application...'
+                echo 'deploy'
             }
         }
     }
 
     post {
         failure {
-            echo 'Pipeline Failed'
+            error 'Pipeline failed'
         }
     }
 }
